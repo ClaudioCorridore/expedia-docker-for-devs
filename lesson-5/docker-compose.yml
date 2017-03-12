@@ -1,0 +1,12 @@
+version: '3'
+services:
+  db:
+    build: ./api
+  web:
+    build: ./app
+    links:
+      - db
+    volumes:
+      - ./app:/usr/share/nginx/html
+    ports:
+      - "8080:80"

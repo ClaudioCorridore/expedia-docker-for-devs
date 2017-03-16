@@ -1,0 +1,26 @@
+ifndef::full-version[]
+include::../headers.adoc[]
+:toc: macro
+:toc-title: What's the plan for this lesson?
+
+toc::[]
+endif::full-version[]
+
+== Lesson X: <Title>
+
+=== <Section>
+
+////
+A bit of description / explanations regarding the section topic
+
+.Exercise
+The exercise itself
+
+The admonition TIP of instance can be used to guide the attendee.
+
+.Expected output
+It can be a snippet of code (use the [source] block) or anything to show the course attendee it exercise is solved.
+
+The solution of the exercise should be inject via the solution file.
+include::solutions.adoc[tags=<Tag of the solution>]
+////

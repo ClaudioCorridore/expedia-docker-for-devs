@@ -1,0 +1,132 @@
+ifndef::full-version[]
+include::../headers.adoc[]
+:toc: macro
+:toc-title: What's the plan for this lesson?
+
+toc::[]
+endif::full-version[]
+
+== Lesson 3: Containers and the rest of the world
+
+=== Not that isolated
+
+One of the main feature of Docker is the _isolation_ of containers.
+A running _container_, by default, can't communicate with other containers or with the host machine.
+Furthermore, once you created an _image_, you can only read and write files within the running _container_.
+
+image::docker-turtles-communication.jpg[width="400px",align="center"]
+
+We can now communicate over network with our _container_, but what if we would like to share some data?
+We just need to add the *VOLUME* instruction to our _Dockerfile_.
+A _volume_ is a special kind of directory that provides several useful features:
+
+- Volumes can be shared and reused between containers.
+- A container doesn't have to be running to share its volumes.
+- Changes to a volume are made directly.
+- Changes to a volume will not be included when you update an image.
+- Volumes persist until no containers use them.
+
+=== Volumes Sharing
+
+As we now, when we write on the filesystem, we actually write on a temporary layer which is not persistent across all the containers.
+To be able to share files with the outside world, we can mount an external Volume and attach it to around container.
+
+A volume can be a simple file or a directory which is mounted when then container is ran.
+
+==== Between the Host and the container
+
+To be able to share files between the host and the container, you have to mount a local folder and map it with a folder from the container.
+The mount operation is as simple as adding a new argument to the run command.
+
+That argument is `-v <host_path>:<container_path>`.
+
+NOTE: Both path must the absolute.
+
+:host_directory: $\{PWD}/docker4devs
+:container_directory: /opt/logs
+
+.Exercise
+Run a container (with an interactive terminal) and shared a directory between your host and the container.
+For example we can use `{host_directory}` from our host and `{container_directory}` on the container side.
+
+Once the container is started, go inside of `{container_directory}`.
+Then open a second terminal (on the host), and go to `{host_directory}`.
+
+At this point, perform a series of `ls` and `touch` commands on both sides.
+Finally, exit the container and perform a last `ls` on the host directory.
+
+.Expected result
+Files created from the container are persisted in the host directory even after the container has been exited.
+
+[NOTE]
+--
+In both cases, if <host_path> or <container_path> don't exist, Docker will create them.
+
+If some files were already existing in the container, the overlay added by the mount will "hide" the files.
+One the volumes are unmounted, the original files will be accessible again.
+--
+
+include::solutions.adoc[tags=firstVolumeSharing]
+
+
+==== Between containers
+
+As we've seen, the `-v` argument mount a local (host) folder.
+But how can we share file between containers?
+
+===== Exposing volumes
+First, the container has to expose the volumes to share.
+This operation is possible via the https://docs.docker.com/engine/reference/builder/#/volume[VOLUME] instruction in the Dockerfile.
+
+Let's take the following Dockerfile:
+
+include::dockerfiles/sharedVolume[lines=1..4]
+
+To expose `/opt/logs`, we can use the `VOLUME` instruction.
+The syntax is either `VOLUME ["folder1", "folder2"]` or `VOLUME folder1 folder2`.
+
+Which gives in our case:
+
+include::dockerfiles/sharedVolume[]
+
+===== Sharing
+
+:first_container_name: containerWithVolume
+:second_container_name: secondContainer
+
+Let's assume, we have a first container running which exposes a volume and that container is named (using the `--name` argument) `{first_container_name}`.
+To run a second container (`{second_container_name}`) which can access the volume exposed by `{first_container_name}`, there is the `--volumes-from [CONTAINER]` argument.
+
+With this argument, when a file is written in one of the exposed volumes on the first container.
+This file (in the same location), will be accessible in the second container and vice versa.
+
+NOTE: the sharing is bidirectional.
+
+.Exercise
+Create and build an image declaring a volume.
+Run a container from it (with a name).
+
+Then run another container, which will access the volume.
+Finally share some files between the two.
+
+
+.Expected output
+
+From the container sharing the volume:
+[source, subs="attributes"]
+----
+$ root@{first_container_name}:/opt/logs# ls
+fromContainerOne  fromContainerTwo
+----
+
+From the container accessing the volume:
+
+[source, subs="attributes"]
+----
+$ root@{second_container_name}:/opt/logs# ls
+fromContainerOne  fromContainerTwo
+----
+
+include::solutions.adoc[tags=exposedVolume]
+
+NOTE: We can even have one of those container sharing a volume with the host and then the sharing can be done among the three parts.

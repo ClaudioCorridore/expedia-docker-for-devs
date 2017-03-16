@@ -1,0 +1,73 @@
+ifndef::full-version[]
+include::../headers.adoc[]
+:toc: macro
+:toc-title: What's the plan for this lesson?
+
+toc::[]
+endif::full-version[]
+
+== Lesson 6: Let's run a small app using what we learnt so far.
+
+=== Our small project
+
+Today we are going to set-up a simple environment to run a web application.
+
+Our stack will be composed of a Docker container running a *Database* (Redis) and another one running a *Web Application* (Node.js).
+
+What we want to achieve is:
+
+. Create a reusable _base_ image for our _Web Application_
+. Pass some *arguments* to the Dockerfile at build time
+. Link the *Database* container with the *Web application* one
+. Mount the logs folder of each container in one folder on our host machine
+. Make our _database_ persistent
+
+=== Base images and the ONBUILD instruction
+
+A base image is a generic purpose image that we would like to use as a base environment for multiple applications.
+
+So far we used the _debian_ image to build all our images, and when we needed a software that was not pre-installed, we used the RUN instruction and the _Debian_ package manager to get it.
+This approach is perfectly fine, but it can quickly become tedious if we end doing again and again the same steps in all our _Dcokerfile_.
+
+What we can do to solve this issue is to build a normal image containing all the dependencies we need and use it as a base image for our application's Dokcerfile.
+
+In this scenario the *ONBUILD* instruction can be very useful:
+
+The *ONBUILD* instruction adds triggers to images. A trigger is executed when the image is used as the basis of another image (e.g., if you have an image that needs source code added from a specific location that might not yet be available, or if you need to execute a build script that is specific to the environment in which the image is built).
+The trigger inserts a new instruction in the build process, as if it were specified right after the FROM instruction. The trigger can be any build instruction. For example:
+
+[source]
+----
+ONBUILD COPY package.json /usr/src/app/
+ONBUILD RUN npm install && npm cache clean
+ONBUILD COPY . /usr/src/app
+----
+
+=== The ARG instruction
+
+The ARG instruction defines variables that can be passed at build-time via the _docker build_ command. This is done using the --build-arg flag. You can only specify build-time arguments that have been defined in the _Dockerfile_.
+
+[source]
+----
+ARG BUILD
+ARG PORT=8080
+----
+
+The second _ARG_ instruction sets a default, if no value is specified for the argument at build-time then the default is used. Let's use one of these arguments in a docker build now.
+
+The same way `docker build` allow us to create an image from a dockerfile.
+We can build several containers with a docker-compose file.
+
+[source]
+----
+docker build --build-arg BUILD=1234 -t local/webapp .
+----
+
+As the local/webapp image is built the _BUILD_ variable will be set to 1234 and the _PORT_ variable will inherit the default value of _8080_.
+
+.Exercise
+Create a _Dockerfile_ and add the _ARG_ instruction to pass arguments at build time, then just log the value you passed in.
+
+=== Let's compose our app
+
+At this point we have all the pieces to build our application, so let's build it together!

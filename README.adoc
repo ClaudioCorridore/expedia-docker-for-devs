@@ -1,0 +1,35 @@
+= Expedia Code Academy: Docker for developers
+Guillaume Scheibel<gscheibel@expedia.com>
+
+include::course.adoc[tags="intro"]
+
+This course has been written using Asciidoctor[http://asciidoctor.org] and its installation is a prerequisite to be able to generate the HTML output.
+
+To generate the complete set of course 'single page version', run the following command:
+
+[source]
+.Full version without solutions
+asciidoctor -a full-version=true course.adoc
+
+The result will be a file name `course.html`
+
+[NOTE]
+To get the solution embedded you can add the `-a solutions=true` argument to the command. +
+To change the name of the output file, add the `-o new-name.html` option.
+
+
+[source]
+.Full version with solutions
+asciidoctor -a full-version=true -a solutions=true course.adoc -o course-with-solutions.html
+
+You can generate a specific version by pointing directly to the `notes.adoc` file for that specific lesson:
+
+[source]
+.Specific lesson without solution
+asciidoctor lesson-0/notes.adoc -o lesson-0.html
+
+And of course, we can have the version containing the solutions too:
+
+[source]
+.Specific lesson with solutions
+asciidoctor -a solutions=true lesson-0/notes.adoc -o lesson-0.html

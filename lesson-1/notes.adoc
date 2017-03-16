@@ -1,0 +1,168 @@
+ifndef::full-version[]
+include::../headers.adoc[]
+:toc: macro
+:toc-title: What's the plan for this lesson?
+
+toc::[]
+endif::full-version[]
+
+== Lesson 1: Make your own image.
+
+:new-image-id: 769d7be53b006f7fa793e5e34483aa3c18d88564cea2c49134cd7c3e2c3274ee
+:new-image-short-id: 769d7be53b00
+:image-name: mySuperImage
+:image-tag: v2
+:second-commit-id: e1402e0cdc9a
+
+=== How do images Docker work?
+
+A Docker image is not a uniform block.
+An image is a stack of layers piled on top of each other.
+An interesting comparison would be against a git repository.
+Each commit creates a SHA-1 which identifies that particular commit.
+At any point in time - the history - you have a representation combining all the previous revision.
+
+For Docker images, it works the same way.
+Each layer represents a - read-only - diff of the filesystem.
+
+.Example of an image's layer
+image::image-layers.jpg[align="center"]
+
+When we create a container out of an image, the Docker engine adds an extra read/write filesystem layer.
+
+=== How to create a new layer?
+
+How do you save your changes with git?
+`git commit` of course. +
+With Docker it works more or less the same way.
+
+.Exercise
+From the Debian base image, create a simple `logs` folder under `/opt`.
+Then exit the container.
+Save your changes using the `commit` command.
+
+[TIP]
+--
+You'll need the ID of your container.
+You have 2 easy ways to find it:
+
+* Lookup for the list of containers (there is a command for that)
+* If you are connected to the container (TTY + Stdin session), you might have noticed the PS1 `root@[SHORT_CONTAINER_ID]`
+--
+
+.Expected result
+The docker engine should output the ID of the new image.
+It will look like:
+
+[source, subs="attributes, verbatim"]
+sha256: {new-image-id} <1>
+
+<1> Where `{new-image-id}` is the new ID of the newly created image.
+
+NOTE: You can refer to the image using either the long or the short version (12 first characters `{new-image-short-id}`).
+
+include::solutions.adoc[tags=firstCommmit]
+
+.Exercise
+Start a new container from the image we've just created.
+And check if the `/opt/logs` folder is there.
+
+TIP: If you don't remember the images you have available on your host, try to list them of.
+
+.Expected output
+As you can image the output should be `logs`.
+
+include::solutions.adoc[tags=rerunFirstCommmit]
+
+NOTE: The commit command has two interesting options `-a` to specify the author and `-m` to add a message.
+
+=== Let's make our image a bit more easy to use
+
+As we already know, Docker images can have names and tags.
+When you commit an image you can specify the `repository`, it means simply its name like `debian` is the name for the image `e5599115b6a6`.
+
+.Exercise
+From the image created during the previous exercise, add a file in the logs folder.
+Then commit this new change but with a name for your image.
+
+.Expected result
+The output should look the same as for the previous exercise but with a new ID.
+
+include::solutions.adoc[tags=commitWithName]
+
+==== Tagging
+
+Tags are used to set the version of the image.
+Like you would have with the version of a software or a library.
+
+Tags can pretty much be any string.
+Remember `debian:latest` and `debian:jessie-slim`
+
+.Exercise
+Add a new file into the logs folder of `{image-name}` but this time when you commit add a tag to this version.
+Then list your local images and see the different tags you have for your image.
+
+.Expected output
+The list command output should look like
+
+[source, subs="attributes"]
+----
+REPOSITORY      TAG         IMAGE ID
+{image-name}    {image-tag}          e1402e0cdc9a
+{image-name}    latest      {second-commit-id}
+----
+
+include::solutions.adoc[tags=commitWithTag]
+
+==== Sharing your image
+
+If we can pull images, we should be able to push right?
+When we want to add or share a library, we are used to use a central repository like Maven Central, Ruby Gems, NPM repository and so on.
+
+With Docker it works the same way.
+The default repository is named https://hub.docker.com/[Docker Hub].
+
+On Docker Hub, you'll be able to find plenty of images.
+Some of them are called officials and are maintained by the same team developing the solution.
+Have a look at the https://hub.docker.com/_/debian/[Debian page] for instance.
+
+Next to the officials, anybody can have a repository and push custom images like https://hub.docker.com/r/gscheibel/expedia-docker-for-devs/[the one] created for this lesson.
+
+===== Prepare the image
+
+:hub-repository-name: expedia-docker-for-devs
+:hub-account-name: gscheibel
+
+To push an image into the Hub, first you need an account.
+Then you have to create a new repository let say `{repository-name}`.
+
+After that on your machine, you tag the image you want to push with the name of you repository.
+
+To do so, use the `tag` command.
+It follows the following format:
+
+[source, subs="quotes"]
+docker tag IMAGE_ID HUB_ACCOUNT_NAME**/**HUB_REPOSITORY_NAME**:**VERSION
+
+If I want to share the image `{second-commit-id}` as my {expedia-docker-for-devs} image, the command will then be:
+
+[source, subs="attributes,verbatim"]
+docker tag {second-commit-id} {hub-account-name}/{hub-repository-name} <1>
+
+<1> If you don't specify the tag version it will be `latest` by default.
+
+===== Pushing the image
+
+Now we have a our image, let's push it to the hub.
+
+First step we have to log in to the Hub from our terminal using `docker login`.
+
+image::docker-login.png[align=center]
+
+Second step, push it using `docker push {hub-account-name}/{hub-repository-name}`
+
+image::docker-push.png[align=center]
+
+Finally, if we look at our repository in the hub - under the Tags tab - we have our image.
+
+image::hub-repository.png[align=center]

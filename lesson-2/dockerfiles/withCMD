@@ -1,0 +1,8 @@
+FROM debian:jessie-slim
+LABEL maintainer Guillaume Scheibel <gscheibel@expedia.com>
+
+RUN mkdir /opt/logs
+
+RUN touch /opt/logs/myfile
+
+CMD ls /opt/logs/

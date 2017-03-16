@@ -1,0 +1,148 @@
+ifndef::full-version[]
+include::../headers.adoc[]
+:toc: macro
+:toc-title: What's the plan for this lesson?
+
+toc::[]
+endif::full-version[]
+
+== Lesson 0: Introduction
+
+=== Docker vs Virtual Machines
+
+You may wondering why you should learn Docker when you already know what is a VM and how to use it to encapsulate and run an application.
+
+When you create a VM you need to emulate every component of the machine, you should install a full OS and you should configure it to run your service.
+Of course you can use provisioning tools but is still time consuming, resource heavy and, most of all, it doesn't feel good when you are building micro services.
+
+Docker uses all the resources of your host machine and it just creates an isolated filesystem (using https://en.wikipedia.org/wiki/UnionFS[UFS]) where to run your service.
+This approach is lighter and much faster.
+Of course there are other cool features of Docker that make it a great tool, but will go through them during this course.
+
+image::docker_vs_vm.jpg[align="center"]
+
+If you want more details about the differences between Docker and VMs you could read https://blog.docker.com/2016/03/containers-are-not-vms/[this] or https://devops.com/docker-vs-vms/[this] articles.
+
+==== Docker registry
+
+=== Set up
+
+If you don't have docker installed yet, go to the Docker page https://docs.docker.com/docker-for-mac/[for Mac] or https://docs.docker.com/docker-for-windows/[for Windows] and download the installation file.
+The easiest way then is to follow the steps provided on the page (https://docs.docker.com/docker-for-mac/\#step-1-install-and-run-docker-for-mac[for Mac] or https://docs.docker.com/docker-for-windows/\#/step-1-install-docker-for-windows[for Windows]).
+
+=== Is my set up completed?
+
+As mentioned in the official page, you should be able to a Docker icon (a small whale) in your top status bar.
+
+From a new terminal, you should be able to run the following commands:
+
+[source]
+docker --version
+
+And have something similar to `Docker version 1.12.5, build 7392c3b` as an output.
+
+TIP: You can easily install Docker command completion by following https://docs.docker.com/compose/completion/#/bash[this] steps
+
+=== Pulling Docker images
+For this course, we are going to use mostly the Debian base image.
+
+.Exercise
+Download the latest Debian docker image from the official registry.
+
+TIP: if you don't remember which command to run, have a look the helper via `docker help`
+
+.Expected output
+[source]
+----
+Using default tag: latest <1>
+latest: Pulling from library/debian
+75a822cd7888: Pull complete
+Digest: sha256:f7062cf040f67f0c26ff46b3b44fe036c29468a7e69d8170f37c57f2eec1261b
+Status: Downloaded newer image for debian:latest
+----
+
+<1> As we haven't specified a specific version, Docker downloads the `latest` one
+
+include::solutions.adoc[tags=downloadDebian]
+
+==== Tags
+
+Each docker image can be tagged with a string.
+The tag is used as a version number.
+Every docker image can be represented with a tag, the naming convention is then `<image name>:<tag>`.
+The default tag is `latest`.
+
+.Exercise
+Download the debian image tagged `jessie-slim`
+
+.Expected output
+[source]
+----
+jessie-slim: Pulling from library/debian
+1a095986e25e: Pull complete
+Digest: sha256:facf8d92aeeeaff4f57d9af5897330430ebdc0cfc95d7855a0bdf9f0ff8af410
+Status: Downloaded newer image for debian:jessie-slim
+----
+
+include::solutions.adoc[tags=downloadJessie]
+
+=== Running a container
+
+A container is to an image what the cake is to a recipe.
+Now we know the recipe to create a "debian cake" let's bake!
+
+Effectively, running container means running a command in a new container.
+Containers are running a Linux environment, so run a good old bash.
+
+To start a new container we are going to use the `run` command.
+The structure of the command is the following `docker run [OPTIONS] IMAGE [COMMAND] [ARG...]`.
+
+TIP: As usual, to get more help we can always use `docker [COMMAND] --help` which would be `docker run --help` in this case.
+
+.Exercise
+Run the `/bin/bash` command, in a new `debian` container.
+What does happen?
+
+include::solutions.adoc[tags=firstRun]
+
+[[run-debian-bash, Run bash in Debian exercise]]
+.Exercise
+Run a new debian container (with a bash session) as before but attach a terminal to it
+What does happen this time?
+
+include::solutions.adoc[tags=secondRun]
+
+=== Which containers are running?
+
+How to get the list of running processes from the command line?
+You would probably answer the _ps_ command and you would be right.
+Docker has the same command.
+
+.Exercise
+While you have a bash session running in a container (see the <<run-debian-bash>>).
+Open another terminal and list the current running containers.
+
+include::solutions.adoc[tags=runningContainers]
+
+=== Container's filesystem
+
+What does happen when in a VM you delete the `/bin`?
+You pray there is a snapshot somewhere!
+
+In the container world, each container is independent and non-persistent.
+It means if you're running a container, you can delete some part of the filesystem and you'll still be able to create new instances of the image.
+The corollary is, if you create a file locally and start container, your file won't be there.
+
+.Exercise
+Take a running debian container.
+Delete some files (like /media for instance).
+In another terminal, start a container of the same type
+
+include::solutions.adoc[tags=deleteFiles]
+
+.Exercise
+In a container, create or delete a file but this time restart the container instead of creating a new one.
+
+TIP: Have a look at `docker restart` and `docker exec`
+
+include::solutions.adoc[tag=deleteAndRestart]

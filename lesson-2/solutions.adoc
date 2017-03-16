@@ -1,0 +1,84 @@
+# tag::firstBuild[]
+////
+How to create a new image out of debian:latest
+////
+ifdef::solutions[]
+.Solution
+The docker file should only contain:
+
+[source]
+FROM debian
+
+The build command
+
+:firstBuildTag: firstfromfile
+
+[source, subs="attributes,verbatim"]
+----
+docker build -t {firstBuildTag} . <1>
+----
+
+<1> `{firstBuildTag}` is the tag of the image being built while `.` is the folder my `Dockerfile` is into
+
+endif::solutions[]
+# end::firstBuild[]
+
+# tag::withMaintainer[]
+////
+Add a label `maintainer` to the image
+////
+ifdef::solutions[]
+.Solution
+
+[source]
+include::dockerfiles/withMaintainer[]
+
+endif::solutions[]
+# end::withMaintainer[]
+
+# tag::mkdirLogs[]
+////
+Create a layer which creates a `logs` folder
+////
+ifdef::solutions[]
+.Solution
+
+[source]
+--
+include::dockerfiles/mkdirLogs[]
+--
+
+endif::solutions[]
+# end::mkdirLogs[]
+
+# tag::withCMD[]
+////
+Create a image which will list the content of a folder a start up.
+////
+ifdef::solutions[]
+.Solution
+
+[source]
+--
+include::dockerfiles/withCMD[]
+--
+
+endif::solutions[]
+# end::withCMD[]
+
+
+# tag::withENV[]
+////
+Create a image which will list the content of a folder a start up.
+And uses a environment variable at build time.
+////
+ifdef::solutions[]
+.Solution
+
+[source]
+--
+include::dockerfiles/withENV[]
+--
+
+endif::solutions[]
+# end::withENV[]

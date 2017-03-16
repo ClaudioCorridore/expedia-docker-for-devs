@@ -1,0 +1,185 @@
+ifndef::full-version[]
+include::../headers.adoc[]
+:toc: macro
+:toc-title: What's the plan for this lesson?
+
+toc::[]
+endif::full-version[]
+
+== Lesson 4: More instructions ...
+
+=== Not that isolated
+
+When you want to build an image to support a application lifecycle
+
+If you have two containers, one running a service on *port 8080* and the other one wants to access it.
+As we said, the first container doesn't expose any port by default, but we can easily solve this issue by adding the *EXPOSE* instruction to our _Dockerfile_.
+
+==== Port Mapping
+
+When you have an application like a web server running in a container, you may want to access it.
+
+Traditionally, http servers listen on port 80, 443 (or 8080 and 8433).
+But what would happen if 2 container were running the same http server?
+If you try to run 2 nginx servers locally, the second run will fail showing a "port already bind" error.
+
+For container, the concept of port mapping help to define which port from the host will be to communicate with the exposed port of the container.
+
+:host_port: 12345
+:container_port: 80
+As said, nginx runs by default on port {container_port}, we can map it with a port from our host (like {host_port}).
+So if we want to access the nginx inside of the container we can use `http://localhost:{host_port}`.
+
+Ports are being mapped when container are started using `-p <host_port>:<container_port>`.
+In the example above it would be `-p {host_port}:{container_port}`.
+
+.Exercise
+Run a container from the `nginx` image (pull it from the registry) with a port mapping and try to access the nginx server (use "/" to get the Welcome page).
+
+.Expected output
+While a curl (or equivalent):
+
+[source]
+----
+$ http localhost:12345 -h
+HTTP/1.1 200 OK
+Accept-Ranges: bytes
+Connection: keep-alive
+Content-Length: 612
+Content-Type: text/html
+Date: Thu, 23 Feb 2017 00:17:56 GMT
+ETag: "58a323e4-264"
+Last-Modified: Tue, 14 Feb 2017 15:36:04 GMT
+Server: nginx/1.11.10
+----
+
+NOTE: Use `-d` to run the container in background
+
+include::solutions.adoc[tags=exposedPort]
+
+==== Port exposition
+
+If you want your custom image to expose a port, you have to explicitly expose it via the https://docs.docker.com/engine/reference/builder/#/expose[EXPOSE] instruction.
+The syntax is simple `EXPOSE <port>`.
+Several ports can be exposed either by using the `EXPOSE` instruction several times or using `EXPOSE <port1> <port2> ....`
+
+.Exercise
+Create a docker image based on debian, install nginx, expose port 80 and that the server at runtime.
+Then repeat the previous exercise.
+
+.Expected output
+After having created the image, you should be able to do:
+
+[source]
+----
+$ docker run -d -p 12345:80 docker4devs:nginx
+
+$ http localhost:12345 -h
+HTTP/1.1 200 OK
+Connection: keep-alive
+Content-Encoding: gzip
+Content-Type: text/html
+Date: Thu, 23 Feb 2017 00:46:47 GMT
+Last-Modified: Thu, 23 Feb 2017 00:36:11 GMT
+Server: nginx/1.6.2
+Transfer-Encoding: chunked
+----
+
+[TIP]
+--
+To install nginx, use those commands: `apt-get update` and `apt-get install -y nginx`.
+
+To start the web server: `nginx -g 'daemon off;'`
+--
+
+include::solutions.adoc[tags=customNginx]
+
+=== How to add my application to the image?
+
+Now we know how to build an image and even how to get in touch with it via Volumes and Port exposition.
+The question is then, how do we incorporate our custom application like a war file into our image?
+
+So far our images are very static.
+When we start a nginx, it serves the default content available when it has been installed.
+Wouldn't be interesting to copy an html file into our nginx and so we have a custom webapp running every time when run a container?
+
+As you can image it's possible via a new instruction https://docs.docker.com/engine/reference/builder/#/copy[COPY].
+
+The `COPY` instruction is very simple and copy the source files or directories and place them into the destination folder.
+
+The syntax is the following `COPY <src>... <dest>`.
+
+TIP: Sources can contain https://golang.org/pkg/path/filepath/#Match[wildcards] such as `expedia*.html`
+
+NOTE: If sources are relative, the path will be resolved based on the directory the build command has been invoked in.
+
+.Exercise
+Based on our custom nginx image, create an image which will copy a simple html file into `/var/www/html/`.
+Then start a container (don't forget the port mapping) and try to access the html file.
+
+.Expected output
+[source]
+----
+$ http localhost:8080/expedia.html
+HTTP/1.1 200 OK
+Connection: keep-alive
+Content-Encoding: gzip
+Content-Type: text/html
+Date: Tue, 28 Feb 2017 19:52:55 GMT
+Last-Modified: Tue, 28 Feb 2017 19:48:53 GMT
+Server: nginx/1.6.2
+Transfer-Encoding: chunked
+
+<html>
+<head>
+  <title>docker4devs</title>
+</head>
+<body>
+  <h1>Hello Wold - Docker 4 devs</h1>
+</body>
+</html>
+----
+
+include::solutions.adoc[tags=nginxWithCustomFile]
+
+[NOTE]
+--
+The https://docs.docker.com/engine/reference/builder/#/add[ADD] instruction works the same way.
+The only difference being it supports URLs and can uncompress archives.
+--
+
+=== Navigating in the filesystem
+
+To navigate in the filesystem, we could `cd` but having a set of `RUN cd /path/ && command;` is not really maintainable, readable and easy to troubleshoot.
+
+That's why we have the https://docs.docker.com/engine/reference/builder/#workdir[WORKDIR] instruction.
+
+This instruction set the working directory and will affect the other "path" based instructions such as RUN, CMD, COPY, ADD, etc.
+The syntax is very easy `WORKDIR /path/to/workdir`.
+The path can be either absolute or relative.
+
+[NOTE]
+--
+WORKDIR can support environment variable.
+For example:
+
+:logspath: /opt/logs
+[source, subs=attributes]
+----
+ENV LOGSPATH {logspath}
+WORKDIR $LOGSPATH
+RUN pwd
+----
+
+Will output `{logspath}`
+--
+
+.Exercise
+Based on the previous image, move to `/var/www/html` before doing the copy instruction.
+
+.Expected output
+The result should be the same as the previous exercise.
+
+TIP: Don't forget to update the COPY instruction to reflect move.
+
+include::solutions.adoc[tags=nginxWithCustomFileAndWorkdir]

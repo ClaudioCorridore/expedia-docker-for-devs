@@ -1,0 +1,60 @@
+# tag::exposedPort[]
+////
+How to expose a port from a container
+////
+ifdef::solutions[]
+.Solution
+To run the container:
+
+[source, subs="attributes"]
+$ docker run -d -p {host_port}:{container_port} nginx
+
+endif::solutions[]
+# end::exposedPort[]
+
+
+# tag::customNginx[]
+////
+How to expose a port from a container
+////
+ifdef::solutions[]
+.Solution
+The custom nginx Dockerfile should look like:
+
+[source]
+--
+include::dockerfiles/customNginx[]
+--
+
+endif::solutions[]
+# end::customNginx[]
+
+# tag::nginxWithCustomFile[]
+////
+How to expose a port from a container
+////
+ifdef::solutions[]
+.Solution
+Having nginx serving a custom web page.
+
+[source]
+--
+include::dockerfiles/nginxWithCustomFile[]
+--
+
+endif::solutions[]
+# end::nginxWithCustomFile[]
+
+# tag::nginxWithCustomFileAndWorkdir[]
+////
+How to move in the image / container filesystem at build time.
+////
+ifdef::solutions[]
+.Solution
+[source]
+--
+include::dockerfiles/nginxWithCustomFileAndWorkdir[]
+--
+
+endif::solutions[]
+# end::nginxWithCustomFileAndWorkdir[]

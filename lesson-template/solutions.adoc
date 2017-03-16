@@ -1,0 +1,12 @@
+# tag::<TO-BE-CHANGED>[]
+////
+Quick explanations
+Don't forget to wrap each solution block with a ifdef macro to help the generation of the solution free version.
+////
+ifdef::solutions[]
+.Solution
+
+//The solution of the exercise.
+
+endif::solutions[]
+# end::<TO-BE-CHANGED>[]

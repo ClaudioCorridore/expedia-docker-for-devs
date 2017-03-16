@@ -1,0 +1,53 @@
+# tag::firstVolumeSharing[]
+////
+First interaction with the volumes
+////
+ifdef::solutions[]
+.Solution
+[source, subs="attributes"]
+docker run -it -v {host_directory}:{container_directory} docker4devs
+
+[source, subs="attributes"]
+.From the host
+----
+cd {host_directory}
+touch fromTheHost
+----
+
+[source, subs="attributes"]
+.From the container
+----
+cd {container_directory}
+touch fromTheContainer
+----
+endif::solutions[]
+# end::firstVolumeSharing[]
+
+
+# tag::exposedVolume[]
+////
+How to expose and share volumes between container
+////
+ifdef::solutions[]
+.Solution
+
+First the Dockerfile should look like:
+
+include::dockerfiles/sharedVolume[]
+
+After having built the image under the tag `docker4devs:volumes` (for instance).
+We can run it with:
+
+[source, subs="attributes"]
+docker run -it --name {first_container_name} -h {first_container_name} docker4devs:volumes
+
+TIP: The `-h` argument which is optional is this use case but allow us to specify the hostname of the container.
+
+NOTE: Here the container's name and its hostname are identical but they can be completely different from each other.
+
+The second container will access the volume shared by `{first_container_name}`:
+
+[source, subs="attributes"]
+docker run -it -h {second_container_name} --volumes-from {first_container_name} debian
+endif::solutions[]
+# end::exposedVolume[]

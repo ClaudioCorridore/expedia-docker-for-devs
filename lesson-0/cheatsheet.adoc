@@ -1,0 +1,23 @@
+include::../headers.adoc[]
+
+== Useful commands to remember
+
+To get all the commands:
+[source]
+docker help
+
+To get help for a specific command
+[source]
+docker COMMAND --help
+
+List the running containers
+[source]
+docker ps
+
+List pulled images
+[source]
+docker images
+
+Run a container and attach to terminal
+[source]
+docker run -it IMAGE /bin/bash

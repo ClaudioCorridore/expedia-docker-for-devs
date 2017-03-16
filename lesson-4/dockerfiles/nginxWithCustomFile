@@ -1,0 +1,9 @@
+FROM debian
+
+RUN apt-get update && \
+    apt-get install -y nginx
+
+COPY expedia.html /var/www/html/
+
+CMD nginx -g 'daemon off;'
+EXPOSE 80

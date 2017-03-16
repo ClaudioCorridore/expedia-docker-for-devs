@@ -1,0 +1,117 @@
+# tag::downloadDebian[]
+//How to download the latest Debian image from the official registry
+ifdef::solutions[]
+.Solution
+[source]
+docker pull debian
+endif::solutions[]
+# end::downloadDebian[]
+
+# tag::downloadJessie[]
+//How to download the Debian image tagged 'jessie' from the official registry
+ifdef::solutions[]
+.Solution
+[source]
+docker pull debian:jessie-slim
+endif::solutions[]
+# end::downloadJessie[]
+
+# tag::firstRun[]
+//How to start a bash session in a new debian container.
+ifdef::solutions[]
+.Solution
+[source]
+docker run debian /bin/bash
+
+Apparently nothing happened but let's have a second look.
+Assuming the engine didn't output any error, the container actually started and ran a new shell session.
+As we haven't attached any terminal to it, it just exited and so the job of the container is done.
+At the point, the docker engine terminates the container.
+endif::solutions[]
+# end::firstRun[]
+
+# tag::secondRun[]
+//Running a bash session in a
+ifdef::solutions[]
+
+.Solution
+[source, subs="quotes"]
+docker run *-it* debian /bin/bash
+
+Now we are in the container \o/.
+And we can play the same commands as if we were in a native Debian or a VM.
+
+NOTE: Try to run `uname -a` on both host and container to see the difference.
+endif::solutions[]
+# end::secondRun[]
+
+# tag::runningContainers[]
+//List all the running container
+ifdef::solutions[]
+.Solution
+[source]
+docker ps
+
+[NOTE]
+--
+We can see some interesting information like:
+
+[horizontal]
+Container ID:: It will be useful for more precise command
+Image:: Which image the container has been made from
+Command:: Which command has ben used when the container has been started
+Status:: In which state is the container
+--
+
+endif::solutions[]
+# end::runningContainers[]
+
+# tag::deleteFiles[]
+//Delete some files in a container and see what happens
+ifdef::solutions[]
+.Solution
+--
+[source]
+.In the container
+----
+rm -fr /media
+ls /media
+----
+
+[source]
+.In another terminal
+----
+docker run -it debian
+ls /media
+----
+
+NOTE: You can try the same approach with creating a new file
+--
+endif::solutions[]
+# end::deleteFiles[]
+
+# tag::deleteAndRestart[]
+//Create a file, restart the container and look still there
+ifdef::solutions[]
+.Solution
+--
+[source]
+.In the container
+----
+echo "Expedia" >> myFile
+----
+
+[source]
+.In another terminal
+----
+docker ps <1>
+docker restart [CONTAINER ID]
+docker exec -it [CONTAINER ID] /bin/bash
+ls <2>
+----
+
+<1> Look up for the ID of your container
+<2> You should be able to see `myFile`
+--
+endif::solutions[]
+# end::deleteAndRestart[]

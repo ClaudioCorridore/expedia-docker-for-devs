@@ -1,0 +1,16 @@
+= Code Academy: Docker for developers
+Guillaume Scheibel<gscheibel@expedia.com>
+:sectanchors:
+
+ifndef::full-version[]
+:imagesdir: ../material/images/
+:stylesdir: ../
+:stylesheet: expedia.css
+
+endif::full-version[]
+
+[.logos]
+--
+image::codeacademylogo.png[]
+image::docker.png[]
+--

@@ -1,0 +1,70 @@
+# tag::firstCommmit[]
+////
+From a base image, let's create and save a layer.
+////
+ifdef::solutions[]
+.Solution
+[source]
+----
+docker run -it debian <1>
+mkdir /opt/logs <2>
+exit <3>
+docker commit [CONTAINER_ID] <4>
+----
+
+<1> Start a new Debian based container and allocate a new pseudo TTY (with the -it flag).
+<2> Create the folder
+<3> Detach from the container
+<4> Commit a new layer on top of the default debian image
+
+NOTE: The Docker engine outputs the unique id of that new image.
+endif::solutions[]
+# end::firstCommmit[]
+
+# tag::rerunFirstCommmit[]
+////
+Start a container based on the image committed during the previous exercise.
+////
+ifdef::solutions[]
+.Solution
+[source, subs="attributes"]
+----
+docker run -it {new-image-id}
+ls /opt
+----
+endif::solutions[]
+# end::rerunFirstCommmit[]
+
+# tag::commitWithName[]
+////
+Create a new image and give it a name.
+////
+ifdef::solutions[]
+.Solution
+[source, subs="attributes"]
+----
+docker run -it {new-image-short-id}
+touch /opt/logs/mySuperFile
+exit
+
+docker commit [CONTAINER_ID] {image-name} -m "Super file added"
+----
+endif::solutions[]
+# end::commitWithName[]
+
+# tag::commitWithTag[]
+////
+Create a new image and tag it.
+////
+ifdef::solutions[]
+.Solution
+[source, subs="attributes"]
+----
+docker run -it {image-name}
+touch /opt/logs/secondFile
+exit
+
+docker commit [CONTAINER_ID] {image-name}:{image-tag} -m "New file needed for v2"
+----
+endif::solutions[]
+# end::commitWithTag[]

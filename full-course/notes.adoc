@@ -1,0 +1,24 @@
+:full-version:
+:toclevels: 1
+:toc: macro
+
+include::../headers.adoc[]
+
+// tag::intro[]
+This course will teach you how to manipulate Docker images and containers from a developer perspective.
+We will cover:
+
+* Docker commands
+* Dockerfile
+* Docker compose
+* Docker swarm
+// end::intro[]
+
+toc::[]
+
+include::../lesson-0/notes.adoc[]
+include::../lesson-1/notes.adoc[]
+include::../lesson-2/notes.adoc[]
+include::../lesson-3/notes.adoc[]
+include::../lesson-4/notes.adoc[]
+include::../lesson-5/notes.adoc[]

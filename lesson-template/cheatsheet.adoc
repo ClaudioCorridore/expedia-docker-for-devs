@@ -1,0 +1,11 @@
+include::../header.adoc[]
+
+== Useful commands to remember
+
+To get all the commands:
+[source]
+docker help
+
+List the running containers
+[source]
+docker ps

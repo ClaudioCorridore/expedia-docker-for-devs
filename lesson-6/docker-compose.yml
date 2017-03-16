@@ -1,0 +1,24 @@
+version: '3.0'
+
+services:
+  db:
+    build:
+      context: ./db
+    image: local/redis:1
+    volumes: 
+      - "$PWD/logs:/logs"
+  app:
+    build:
+      context: ./app
+      args: 
+        - PORT
+    image: local/app:1
+    environment: 
+        - DB_PORT=6379
+        - DB_HOSTNAME=db
+    ports: 
+        - "8080:$PORT"
+    links: 
+      - db
+    volumes: 
+      - "$PWD/logs:/logs"

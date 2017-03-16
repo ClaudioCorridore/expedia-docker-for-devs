@@ -733,6 +733,7 @@ body { text-align: justify; }
 <ul class="sectlevel2">
 <li><a href="#_our_small_project">Our small project</a></li>
 <li><a href="#_base_images_and_the_onbuild_instruction">Base images and the ONBUILD instruction</a></li>
+<li><a href="#_the_arg_instruction">The ARG instruction</a></li>
 <li><a href="#_let_s_compose_our_app">Let&#8217;s compose our app</a></li>
 </ul>
 </li>
@@ -800,8 +801,9 @@ ONBUILD RUN npm install &amp;&amp; npm cache clean
 ONBUILD COPY . /usr/src/app</code></pre>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_the_arg_instruction"><a class="anchor" href="#_the_arg_instruction"></a>The ARG instruction</h4>
+</div>
+<div class="sect2">
+<h3 id="_the_arg_instruction"><a class="anchor" href="#_the_arg_instruction"></a>The ARG instruction</h3>
 <div class="paragraph">
 <p>The ARG instruction defines variables that can be passed at build-time via the <em>docker build</em> command. This is done using the --build-arg flag. You can only specify build-time arguments that have been defined in the <em>Dockerfile</em>.</p>
 </div>
@@ -831,7 +833,6 @@ We can build several containers with a docker-compose file.</p>
 <p>Create a <em>Dockerfile</em> and add the <em>ARG</em> instruction to pass arguments at build time, then just log the value you passed in.</p>
 </div>
 </div>
-</div>
 <div class="sect2">
 <h3 id="_let_s_compose_our_app"><a class="anchor" href="#_let_s_compose_our_app"></a>Let&#8217;s compose our app</h3>
 <div class="paragraph">
@@ -843,7 +844,7 @@ We can build several containers with a docker-compose file.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2017-03-15 23:57:02 GMT
+Last updated 2017-03-16 00:01:28 GMT
 </div>
 </div>
 </body>
